@@ -6,36 +6,27 @@ const app = express();
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Database connected ✅' });
+  res.json({ message: 'API working, Database Connected' });
 });
 
-app.get('/users', async (req, res) => {
-  const result = await pool.query('SELECT * FROM users');
+app.get('/students', async (req, res) => {
+  const result = await pool.query('SELECT * FROM students');
   res.json(result.rows);
 });
 
-app.get('/users/:id', async (req, res) => {
-  const result = await pool.query('SELECT * FROM users WHERE id = $1', [req.params.id]);
-  res.json(result.rows[0]);
+app.get('/departments', async (req, res) => {
+  const result = await pool.query('SELECT * FROM departments');
+  res.json(result.rows);
 });
 
-app.post('/users', async (req, res) => {
+app.post('/students', async (req, res) => {
   const { name, email } = req.body;
-  const result = await pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email]);
+  const result = await pool.query('INSERT INTO students (student_name, age, dept_id) VALUES ($1, $2, $3) RETURNING *', [name, email]);
   res.json(result.rows[0]);
 });
 
-app.put('/users/:id', async (req, res) => {
+app.post('/departments', async (req, res) => {
   const { name, email } = req.body;
-  const result = await pool.query('UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *', [name, email, req.params.id]);
+  const result = await pool.query('INSERT INTO departments(dept_id, dept_name) VALUES ($1, $2) RETURNING *', [dept_id, dept_name]);
   res.json(result.rows[0]);
-});
-
-app.delete('/users/:id', async (req, res) => {
-  await pool.query('DELETE FROM users WHERE id = $1', [req.params.id]);
-  res.json({ message: 'User deleted ✅' });
-});
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server running on port ${process.env.PORT}`);
 });
